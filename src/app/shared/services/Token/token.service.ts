@@ -4,12 +4,13 @@ import { EMPTY, Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TokenService {
-  private apiUrl = 'https://localhost:7196/api/Users';
+  private apiUrl = environment.apiUrl;
   private accessToken: string | null = null;
   private refreshToken: string | null = null;
 

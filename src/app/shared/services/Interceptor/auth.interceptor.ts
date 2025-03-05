@@ -1,7 +1,7 @@
 import { HttpRequest, HttpHandlerFn, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError, EMPTY } from 'rxjs';
 import { catchError, switchMap, filter, take } from 'rxjs/operators';
-import { TokenService } from './token.service'; // Import TokenService
+import { TokenService } from '../Token/token.service'; // Import TokenService
 import { inject } from '@angular/core';
 
 let isRefreshing = false;

@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../../shared/services/auth.service';
+import { AuthService } from '../../shared/services/Auth/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon'; // Add this
-import { RouterLink } from '@angular/router'; // Add this
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
+import { trigger, state, style, animate, transition } from '@angular/animations';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-register',
@@ -22,15 +24,55 @@ import { RouterLink } from '@angular/router'; // Add this
     MatButtonModule,
     MatSelectModule,
     MatIconModule, 
-    RouterLink 
+    RouterLink,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
+  animations: [
+    // Fade-in animation for form
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-50px)' }),
+        animate('0.5s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    
+    // Shake animation on error
+    trigger('shake', [
+      state('noError', style({ transform: 'translateX(0)' })),
+      state('error', style({ transform: 'translateX(0)' })),
+      transition('noError => error', [
+        animate(
+          '0.3s',
+          style({ transform: 'translateX(-10px)' })
+        ),
+        animate(
+          '0.3s',
+          style({ transform: 'translateX(10px)' })
+        ),
+        animate(
+          '0.3s',
+          style({ transform: 'translateX(-5px)' })
+        ),
+        animate(
+          '0.3s',
+          style({ transform: 'translateX(5px)' })
+        ),
+        animate(
+          '0.3s',
+          style({ transform: 'translateX(0)' })
+        )
+      ])
+    ])
+  ]
 })
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
   hidePassword = true; // Add this for password visibility toggle
   errorMessage: string | null = null;
+  errorState = 'noError';
+  isLoading = false;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {}
 
@@ -45,11 +87,17 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
     if (this.registerForm.valid) {
+      this.isLoading = true;
       const { name, email, password, role } = this.registerForm.value;
       this.authService.register(name, email, password, role).subscribe({
-        next: (data) => {},
+        next: () => {
+          this.isLoading = false;
+        },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Registration failed. Please try again.'; // Set error message for display
+          this.isLoading = false;
+          this.errorMessage = err.error?.message || 'Registration failed. Please try again.';
+          this.errorState = 'error';
+          setTimeout(() => (this.errorState = 'noError'), 500); 
         }
       });
     }

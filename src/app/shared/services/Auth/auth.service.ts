@@ -3,16 +3,17 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
-import { User } from '../models/user';
+import { User } from '../../models/user';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { throwError } from 'rxjs';
-import { TokenService } from './token.service'; // Import TokenService
+import { TokenService } from '../Token/token.service';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:7196/api/Users';
+  private apiUrl = environment.apiUrl;
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
   private userSubject = new BehaviorSubject<User | null>(null);
 
